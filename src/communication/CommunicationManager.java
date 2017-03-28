@@ -235,9 +235,6 @@ public class CommunicationManager extends Observable implements Runnable {
 		return this.identifier;
 	}
 
-	public Color getColor() {
-		return color;
-	}
 
 	public void sendObjectMessage(Object data) {
 		byte[] bytes = serialize(data);

@@ -13,17 +13,13 @@ public class ContentMessage implements Serializable{
 	 * Receiver's ID
 	 */
 	private int receiver;
-	private int x;
-	private int y;
-	private Color color;
 	private int type;
+	private int score;
 	
-	public ContentMessage(int _sender, int _receiver, int _x, int _y, Color _color, int _type) {
+	public ContentMessage(int _sender, int _receiver, int _type, int _score) {
 		sender = _sender;
 		receiver = _receiver;
-		x=_x;
-		y=_y;
-		color = _color;
+		score = _score;
 		type = _type;
 	}
 
@@ -34,21 +30,13 @@ public class ContentMessage implements Serializable{
 	public int getReceiver() {
 		return receiver;
 	}
-
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
-	}
-	
-	public Color getColor(){
-		return color;
-	}
 	
 	public int getType(){
 		return type;
+	}
+	
+	public int getScore(){
+		return score;
 	}
 	
 }

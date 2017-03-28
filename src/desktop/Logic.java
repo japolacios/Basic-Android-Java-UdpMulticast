@@ -9,18 +9,17 @@ import communication.ContentMessage;
 import communication.Empezar;
 import processing.core.PApplet;
 
-public class Logic implements Observer{
+public class Logic implements Observer {
 
 	// Atributes
-	private	PApplet app;
+	private PApplet app;
 	private boolean iniciar;
-	
+
 	// Relations
 	private Ui ui;
 	private CommunicationManager com;
-	
-	
-	//Collections
+
+	// Collections
 	private ArrayList<Duck> ducks;
 
 	// Constructor
@@ -31,19 +30,19 @@ public class Logic implements Observer{
 
 	// Initialize other Clases and Atributes
 	private void init() {
-		
+
 		iniciar = false;
-		
-		//Create UI
+
+		// Create UI
 		ui = new Ui(app);
-		
-		//Create Communication
+
+		// Create Communication
 		com = new CommunicationManager();
 		com.addObserver(this);
-		
-		//Start Communication Thread
+
+		// Start Communication Thread
 		new Thread(com).start();
-		
+
 		ducks = new ArrayList<Duck>();
 
 	}
@@ -54,22 +53,32 @@ public class Logic implements Observer{
 		ducks.add(tempDuck);
 		System.out.println("New Duck Added");
 	}
-	
-	//Random to add Duck
 
-	// Call the paint ducks from the UI
-	public void addRandomDuck(){
-		float probabilty = app.random(0,10000);
-		if(probabilty >= 9980){
+	// Random to add Duck
+	public void addRandomDuck() {
+		float probabilty = app.random(0, 10000);
+		if (probabilty >= 9980) {
 			addDuck();
 		}
+	}
+
+	//Stop the Game
+	private void endGame(){
+		iniciar = false;
+	}
+	
+	//Send the Score to the admin
+	private void sendScore(){
+		ContentMessage tempMessage = new ContentMessage(com.getIdentifier(), 'c', 3, ui.getScore());
+		com.sendObjectMessage(tempMessage);
+		System.out.println("I just sent my score");
 	}
 	
 	// Paint Method
 	public void paint() {
 		ui.paint();
 
-		if (ui.getStage() == 2) {
+		if (ui.getStage() == 2 && iniciar == true) {
 			addRandomDuck();
 			if (!ducks.isEmpty() && ducks != null) {
 				for (int i = 0; i < ducks.size(); i++) {
@@ -80,72 +89,90 @@ public class Logic implements Observer{
 		}
 
 	}
-	
-	//------------------------------------------------------------------------------------------------------------
-	public void click(){
+
+	// ------------------------------------------------------------------------------------------------------------
+	public void click() {
 		System.out.println("Click");
 		if (ui.getStage() == 2) {
 			if (!ducks.isEmpty() && ducks != null) {
 				for (int i = 0; i < ducks.size(); i++) {
-					if (app.dist(app.mouseX, app.mouseY,ducks.get(i).getX(), ducks.get(i).getY()) <= 50){
+					if (app.dist(app.mouseX, app.mouseY, ducks.get(i).getX(), ducks.get(i).getY()) <= 50) {
 						System.out.println("Kill");
-						ui.setScore(ui.getScore()+1);
+						ui.setScore(ui.getScore() + 1);
 						ducks.remove(i);
+						
+						//Check if score is greater than 10 to end game
+						if(ui.getScore()>= 10){
+							
+							ContentMessage tempMessage = new ContentMessage(com.getIdentifier(), 'c', 2, 0);
+							com.sendObjectMessage(tempMessage);
+							System.out.println("I Win! Stop the Game");
+						}
 					}
 				}
 			}
 		}
 	}
 
-	
-	//-----------------------------------------------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------------------------------------------
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
-		if(arg instanceof Empezar){
+		if (arg instanceof Empezar) {
 			iniciar = true;
 		}
-		
+
 		if (arg instanceof ContentMessage) {
 			ContentMessage message = (ContentMessage) arg;
-			//System.out.println("Content received from " + message.getSender());
+			// System.out.println("Content received from " +
+			// message.getSender());
 			if (com.getIdentifier() == message.getReceiver()) {
-				
-				//Check case for chars -> 'admin' case
+
+				// Check case for chars -> 'admin' case
 				switch (com.getIdentifier()) {
-				//When im 1
+
+				// When im 1
 				case 1:
-					if (message.getSender() == 2) {
-						
+					if (message.getSender() == 'c') {
+						if (message.getType() == 1) {
+							addDuck();
+						}
 					}
-					
-					
+
 					break;
-					//When im 2
+				// When im 2
 				case 2:
-					if (message.getSender() == 1) {
-						
-					}
-					if (message.getSender() == 3) {
-						
-						
+					if (message.getSender() == 'c') {
+						if (message.getType() == 1) {
+							addDuck();
+						}
+
 					}
 					break;
-					//When im 3
+				// When im 3
 				case 3:
-					if (message.getSender() == 2) {
-						
-							
+					if (message.getSender() == 'c') {
+						if (message.getType() == 1) {
+							addDuck();
+						}
+
 					}
 					break;
+
+				// When Message goes for all
+				case 'a':
+					if (message.getSender() == 'c') {
+						endGame();
+						// AskForAllScores
+					}
 				default:
 					break;
 				}
 			}
 		}
-		
-		//End of Update
+
+		// End of Update
 	}
-	
-	//End of Class
+
+	// End of Class
 }
