@@ -13,14 +13,16 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Observable;
 
+import com.redes.japo.updmulticast.AutoIDMessage;
+
 public class CommunicationManager extends Observable implements Runnable {
 	private MulticastSocket socket;
-	private final int PORT = 5000;
+	private final int PORT = 8626;
 	private final String GROUP_ADDRESS = "224.2.2.5";
 	private InetAddress group_ia;
 	private int identifier;
 	private boolean identified;
-	private Color color;
+	
 
 	public CommunicationManager() {
 		// Initialization

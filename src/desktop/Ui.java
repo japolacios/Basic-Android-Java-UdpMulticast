@@ -43,18 +43,21 @@ public class Ui {
 	
 	private void loadAssets(){
 		
-		logo = app.loadImage("../assets/logo.png");
-		background = app.loadImage("../assets/background.png");
-		duck = app.loadImage("../assets/duck.png");
-		cursor = app.loadImage("../assets/aim.png");
-		
-		
-		
+		logo = app.loadImage("./assets/logo.png");
+		background = app.loadImage("./assets/background.png");
+		duck = app.loadImage("./assets/duck.png");
+		cursor = app.loadImage("./assets/aim.png");
 		System.out.println("Assets Loaded to UI");
+		
+		
+		
+		
+		
+	
 	}
 	
 	private void loadFonts(){
-		mainFont = app.createFont("../assets/font.ttf", 32);
+		mainFont = app.createFont("./assets/font.ttf", 32);
 		app.textFont(mainFont);
 		app.textAlign(app.CENTER,app.CENTER);
 		System.out.println("Font Loaded");
