@@ -1,4 +1,4 @@
-package communication;
+package com.redes.japo.updmulticast;
 import java.io.Serializable;
 
 public class Empezar implements Serializable{

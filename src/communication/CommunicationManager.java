@@ -14,10 +14,11 @@ import java.net.SocketTimeoutException;
 import java.util.Observable;
 
 import com.redes.japo.updmulticast.AutoIDMessage;
+import com.redes.japo.updmulticast.ContentMessage;
 
 public class CommunicationManager extends Observable implements Runnable {
 	private MulticastSocket socket;
-	private final int PORT = 8626;
+	private final int PORT = 5000;
 	private final String GROUP_ADDRESS = "224.2.2.5";
 	private InetAddress group_ia;
 	private int identifier;
@@ -66,7 +67,7 @@ public class CommunicationManager extends Observable implements Runnable {
 		AutoIDMessage message = new AutoIDMessage("Hi i'm a new member");
 		byte[] bytes = serialize(message);
 		try {
-			sendMessage(bytes, group_ia, PORT);
+			sendMessage(bytes);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -120,7 +121,7 @@ public class CommunicationManager extends Observable implements Runnable {
 		AutoIDMessage message = new AutoIDMessage("Hi, I am:" + identifier);
 		byte[] bytes = serialize(message);
 		try {
-			sendMessage(bytes, group_ia, PORT);
+			sendMessage(bytes);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -162,13 +163,10 @@ public class CommunicationManager extends Observable implements Runnable {
 		return data;
 	}
 
-	public void sendMessage(byte[] data, InetAddress destAddress, int destPort) throws IOException {
-		DatagramPacket packet = new DatagramPacket(data, data.length, destAddress, destPort);
-
-		// System.out.println("Sending data to " + destAddress.getHostAddress()
-		// + ":" + destPort);
+	public void sendMessage(byte[] data) throws IOException {
+		DatagramPacket packet = new DatagramPacket(data, data.length, group_ia, PORT);
 		socket.send(packet);
-		// System.out.println("Data was sent");
+		System.out.println("Message sent");
 
 	}
 
@@ -176,8 +174,7 @@ public class CommunicationManager extends Observable implements Runnable {
 		byte[] buffer = new byte[1024];
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 		socket.receive(packet);
-		// System.out.println("Data received from " + packet.getAddress() + ":"
-		// + packet.getPort());
+		
 		return packet;
 
 	}
@@ -214,7 +211,7 @@ public class CommunicationManager extends Observable implements Runnable {
 
 						// If we need to validate other kind of objects this is
 						// the moment
-
+						
 						// Notify the observers that new data has arrived and
 						// pass
 						// the data to them
@@ -241,7 +238,7 @@ public class CommunicationManager extends Observable implements Runnable {
 	public void sendObjectMessage(Object data) {
 		byte[] bytes = serialize(data);
 		try {
-			sendMessage(bytes, group_ia, PORT);
+			sendMessage(bytes);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

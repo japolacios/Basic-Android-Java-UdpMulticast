@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.redes.japo.updmulticast.ContentMessage;
+import com.redes.japo.updmulticast.Empezar;
+
 import communication.CommunicationManager;
-import communication.ContentMessage;
-import communication.Empezar;
 import processing.core.PApplet;
 
 public class Logic implements Observer {
@@ -92,6 +93,8 @@ public class Logic implements Observer {
 
 	// ------------------------------------------------------------------------------------------------------------
 	public void click() {
+		
+		
 		System.out.println("Click");
 		if (ui.getStage() == 2) {
 			if (!ducks.isEmpty() && ducks != null) {
@@ -101,31 +104,32 @@ public class Logic implements Observer {
 						ui.setScore(ui.getScore() + 1);
 						ducks.remove(i);
 						
-						//Check if score is greater than 10 to end game
-						if(ui.getScore()>= 10){
-							
-							ContentMessage tempMessage = new ContentMessage(com.getIdentifier(), 'c', 2, 0);
-							com.sendObjectMessage(tempMessage);
-							System.out.println("I Win! Stop the Game");
-						}
 					}
 				}
 			}
 		}
 	}
 
+	public void shareScore(){
+		ContentMessage tempScore = new ContentMessage(com.getIdentifier(), 'a', 4, ui.getScore());
+		com.sendObjectMessage(tempScore);
+	}
 	// -----------------------------------------------------------------------------------------------------------------
 	@Override
 	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		if (arg instanceof Empezar) {
-			iniciar = true;
-		}
 
 		if (arg instanceof ContentMessage) {
 			ContentMessage message = (ContentMessage) arg;
-			// System.out.println("Content received from " +
-			// message.getSender());
+			
+			if(((ContentMessage) arg).getType() == 3){
+				iniciar = true;
+			}
+			
+			if(((ContentMessage) arg).getType() == 2){
+				iniciar = false;
+				shareScore();
+			}
+			
 			if (com.getIdentifier() == message.getReceiver()) {
 
 				// Check case for chars -> 'admin' case
@@ -133,39 +137,48 @@ public class Logic implements Observer {
 
 				// When im 1
 				case 1:
-					if (message.getSender() == 'c') {
+					
 						if (message.getType() == 1) {
 							addDuck();
-						}
+						
+					}
+						if (message.getType() == 4) {
+							if(message.getSender() == 2){
+							ui.setOthersScore(message.getSender(), message.getScore(), 0, 0);
+							} if(message.getSender() == 3){
+								ui.setOthersScore(0, 0, message.getSender(), message.getScore());
+							}
 					}
 
 					break;
 				// When im 2
 				case 2:
-					if (message.getSender() == 'c') {
+					
 						if (message.getType() == 1) {
 							addDuck();
-						}
-
+					}
+						
+						if (message.getType() == 4) {
+							if(message.getSender() == 1){
+							ui.setOthersScore(message.getSender(), message.getScore(), 0, 0);
+							} if(message.getSender() == 3){
+								ui.setOthersScore(0, 0, message.getSender(), message.getScore());
+							}
 					}
 					break;
 				// When im 3
 				case 3:
-					if (message.getSender() == 'c') {
+					
 						if (message.getType() == 1) {
 							addDuck();
-						}
-
 					}
-					break;
-
-				// When Message goes for all
-				case 'a':
-					if (message.getSender() == 'c') {
-						endGame();
-						// AskForAllScores
+						if (message.getType() == 4) {
+							if(message.getSender() == 1){
+							ui.setOthersScore(message.getSender(), message.getScore(), 0, 0);
+							} if(message.getSender() == 3){
+								ui.setOthersScore(0, 0, message.getSender(), message.getScore());
+							}
 					}
-				default:
 					break;
 				}
 			}

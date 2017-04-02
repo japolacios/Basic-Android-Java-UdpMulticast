@@ -1,7 +1,7 @@
-package communication;
+package com.redes.japo.updmulticast;
 
 
-import java.awt.Color;
+
 import java.io.Serializable;
 
 public class ContentMessage implements Serializable{

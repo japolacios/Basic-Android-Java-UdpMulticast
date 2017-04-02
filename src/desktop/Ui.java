@@ -11,7 +11,8 @@ public class Ui {
 	private int stage,alpha, score;
 	private boolean reached,gameStarted;
 	private PFont mainFont;
-	
+	private int p1n,p2n;
+	private int p1s,p2s;
 	
 	//PImages
 	PImage logo,background,duck,cursor;
@@ -31,7 +32,8 @@ public class Ui {
 		loadAssets();
 		loadFonts();
 		stage = 0;
-		
+		p1n = 0;
+		p2n = 0;
 		//Initialize setting for intro animation
 		alpha = 0;
 		reached = false;
@@ -129,11 +131,25 @@ public class Ui {
 		}
 		if(stage ==2){
 			paintBasicAssets();
+			paintAllScores();
 		}
 	}
 	
 	public void paintDuck(float _x, float _y){
 		app.image(duck, _x, _y);
+	}
+	
+	public void paintAllScores(){
+		
+		if(p1n != 0 && p2n != 0){
+		
+		app.text("Player "+ p1n, app.width/3, app.height/2);
+		app.text(p1s, app.width/3, (app.height/2) + 80);
+		app.text("Player "+ p2n, (app.width/3)*2, app.height/2);
+		app.text(p2s, app.width/3, (app.height/2) + 80);
+		app.text("Your Score", app.width/2, app.height/2);
+		app.text(score, app.width/3, (app.height/2) + 80);
+		}
 	}
 	
 	//---------------------------------------------------------------------------
@@ -147,7 +163,16 @@ public class Ui {
 		score = _score;
 	}
 	
-	
+	public void setOthersScore(int _p1n, int _p2n, int _p1s, int _p2s){
+		if(_p1n != 0){
+			p1n = _p1n;
+			p1s = _p1s;
+		}
+		if(_p2n != 0){
+			p2n = _p2n;
+			p2s = _p2s;
+		}
+	}
 	//---------------------------------------------------------------------------
 	//Getters
 	
@@ -158,4 +183,7 @@ public class Ui {
 	public int getScore(){
 		return score;
 	}
+
+
 }
+
